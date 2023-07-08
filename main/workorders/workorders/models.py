@@ -1,5 +1,16 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+
+
+class User(AbstractUser):
+    ROLE_CHOICES = (
+        ('admin', 'Admin'),
+        ('supervisor', 'Supervisor'),
+        ('guest', 'Guest'),
+    )
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+
 
 class WorkOrder(models.Model):
     WORK_ORDER_TYPES = (
@@ -25,6 +36,10 @@ class WorkOrder(models.Model):
     finished_at = models.DateTimeField()
     type = models.CharField(max_length=20, choices=WORK_ORDER_TYPES)
     status = models.CharField(max_length=20, choices=WORK_ORDER_STATUSES)
+
+class Cleaning(models.Model):
+    work_order = models.OneToOneField(WorkOrder, on_delete=models.CASCADE, primary_key=True)
+    cancel_by_guest = models.BooleanField(default=False)
 
 class MaidRequest(models.Model):
     work_order = models.OneToOneField(WorkOrder, on_delete=models.CASCADE, primary_key=True)

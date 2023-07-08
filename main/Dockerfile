@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 8000
 
 # Define the command to run the Django development server
-CMD ["python", "workorders/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "workorders/manage.py", "runserver", "0.0.0.0:8000", "--nothreading"]
