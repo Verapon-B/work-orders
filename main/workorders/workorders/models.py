@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 from .choices import Action, UserRole, WorkOrderType, WorkOrderStatus
 
@@ -33,8 +32,6 @@ class AmenityRequest(models.Model):
     work_order = models.OneToOneField(WorkOrder, on_delete=models.CASCADE, primary_key=True)
     amenity_type = models.CharField(max_length=50)
     quantity = models.IntegerField()
-
-User = get_user_model()
 
 class OperationLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

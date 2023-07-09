@@ -1,6 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .models import WorkOrder, OperationLog
+from .models import WorkOrder, OperationLog, Cleaning
 from .serializers import WorkOrderSerializer
 from .choices import UserRole, WorkOrderType, Action
 
@@ -55,7 +55,10 @@ class WorkOrderViewSet(viewsets.ModelViewSet):
 
         if instance.work_order_type == WorkOrderType.CLEANING:
             if user_role == UserRole.SUPERVISOR:
-                return super().update(request, *args, **kwargs)
+                if request.data.get('cancel_by_guest'):
+                    cleaning_instance = Cleaning.objects.get(work_order=instance)
+                    cleaning_instance.cancel_by_guest = True
+                    cleaning_instance.save()
             else:
                 return Response(
                     {'error': 'Only Maid Supervisor can update Cleaning work orders.'},
