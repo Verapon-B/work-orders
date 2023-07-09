@@ -25,7 +25,7 @@ class WorkOrderSerializer(serializers.ModelSerializer):
     maid_request = MaidRequestSerializer(required=False)
     technician_request = TechnicianRequestSerializer(required=False)
     amenity_request = AmenityRequestSerializer(required=False)
-    cleaning_request = AmenityRequestSerializer(required=False)
+    cleaning_request = CleaningSerializer(required=False)
 
     class Meta:
         model = WorkOrder

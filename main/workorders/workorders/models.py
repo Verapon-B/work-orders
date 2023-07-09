@@ -1,41 +1,21 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.db import models
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+from .choices import Action, UserRole, WorkOrderType, WorkOrderStatus
 
 class User(AbstractUser):
-    ROLE_CHOICES = (
-        ('admin', 'Admin'),
-        ('supervisor', 'Supervisor'),
-        ('guest', 'Guest'),
-    )
-
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-
+    role = models.CharField(max_length=20, choices=UserRole.choices)
 
 class WorkOrder(models.Model):
-    WORK_ORDER_TYPES = (
-        ('cleaning', 'Cleaning'),
-        ('maid_request', 'Maid Request'),
-        ('technician_request', 'Technician Request'),
-        ('amenity_request', 'Amenity Request'),
-    )
-
-    WORK_ORDER_STATUSES = (
-        ('created', 'Created'),
-        ('assigned', 'Assigned'),
-        ('in_progress', 'In Progress'),
-        ('done', 'Done'),
-        ('cancel', 'Cancel'),
-    )
-
     work_order_number = models.CharField(max_length=50, unique=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_workorders')
     assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assigned_workorders')
     room = models.CharField(max_length=50)
     started_at = models.DateTimeField()
     finished_at = models.DateTimeField()
-    type = models.CharField(max_length=20, choices=WORK_ORDER_TYPES)
-    status = models.CharField(max_length=20, choices=WORK_ORDER_STATUSES)
+    work_order_type = models.CharField(max_length=20, choices=WorkOrderType.choices)
+    status = models.CharField(max_length=20, choices=WorkOrderStatus.choices)
 
 class Cleaning(models.Model):
     work_order = models.OneToOneField(WorkOrder, on_delete=models.CASCADE, primary_key=True)
@@ -53,3 +33,16 @@ class AmenityRequest(models.Model):
     work_order = models.OneToOneField(WorkOrder, on_delete=models.CASCADE, primary_key=True)
     amenity_type = models.CharField(max_length=50)
     quantity = models.IntegerField()
+
+User = get_user_model()
+
+class OperationLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    timestamp = models.DateTimeField(default=timezone.now)
+    action = models.CharField(max_length=10, choices=Action.choices)
+    model = models.CharField(max_length=100)
+    object_id = models.PositiveIntegerField()
+    details = models.TextField()
+
+    def __str__(self):
+        return f"{self.action} on {self.model} ({self.object_id})"

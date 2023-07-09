@@ -4,6 +4,7 @@ services:
     build: .
     ports:
       - "8000:8000"
+      - "5555:5555"
     depends_on:
       - db
     volumes:

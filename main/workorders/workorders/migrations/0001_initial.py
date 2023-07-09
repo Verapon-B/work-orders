@@ -14,6 +14,7 @@ def create_users(apps, schema_editor):
     User.objects.create_superuser(username='admin', password='adminpassword')
     User.objects.create_user(username='supervisor', password='supervisorpassword', role='supervisor')
     User.objects.create_user(username='guest', password='guestpassword', role='guest')
+    User.objects.create_user(username='maid', password='maidpassword', role='maid')
 
 
 class Migration(migrations.Migration):
